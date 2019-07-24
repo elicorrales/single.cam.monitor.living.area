@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./libraries/bootstrap.min.css">
+    </head>
+    <body>
+
+        <div id="messages"></div>
+
+        <div class="container container-fluid">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>LIVE</strong>
+                    <button class="btn btn-default" id="showHideAllPlayers" onclick="doShowHideAllPlayers(this)">Show</button>
+                    Width:<input name="playerWidth" id="playerWidth" type="text" size="3" maxlength="3" value="700" onchange="doChangePlayerWidth(this)" />
+                    Height:<input name="playerHeight" id="playerHeight" type="text" size="3" maxlength="3" value="350" onchange="doChangePlayerHeight(this)" />
+                    <button class="btn btn-default" id="stopPlayer1" onclick="doStopCamera(this)">Stop 1</button>
+                    <button class="btn btn-default" id="stopPlayer2" onclick="doStopCamera(this)">Stop 2</button>
+                    <button class="btn btn-default" id="stopPlayer3" onclick="doStopCamera(this)">Stop 3</button>
+                    <button class="btn btn-default" id="startStopAllCameras" onclick="doStartStopAllCameras(this)">Stream All</button>
+                    <button class="btn btn-default" id="playPauseAllPlayers" onclick="doPlayPauseAllPlayers(this)" disabled>Play All</button>
+                </div>
+                <div class="panel-body">
+                    <video style="display:none" id="player1"></video>
+                    <video id="player2"></video>
+                    <video style="display:none" id="player3"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-fluid">
+            <div id="photoCapturePanel" class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>CAPTURE</strong>
+                    <button class="btn btn-default" id="showHideSnapAllPhotos" onclick="doShowHideSnapAllPhotos(this)">Show</button>
+                    Width:<input name="photoWidth" id="photoWidth" type="text" size="3" maxlength="3" value="100" onchange="doChangePhotoWidth(this)" />
+                    Height:<input name="photoHeight" id="photoHeight" type="text" size="3" maxlength="3" value="75" onchange="doChangePhotoHeight(this)" />
+                    <button class="btn btn-default" id="snapAllPhotos" onclick="doSnapAllPhotos()">Snap Photo</button>
+                    <button class="btn btn-default" id="snapAllPhotosContinuousSaveMovment" onclick="doSnapAllPhotosContinuousSaveMovement()">Continuous</button>
+                    <button class="btn btn-default" id="stopSnapAllPhotosContinuous" onclick="doStopSnapAllPhotosContinuous()">Stop</button>
+                    DispWidth:<input name="photoDispWidth" id="photoDispWidth" type="text" size="3" maxlength="3" value="600" onchange="doChangeDispPhotoWidth(this)" />
+                    DispHeight:</label> <input name="photoDispHeight" id="photoDispHeight" type="text" size="3" maxlength="3" value="400" onchange="doChangeDispPhotoHeight(this)" />
+                    <button class="btn btn-default" id="snapBackgroundAll" onclick="doSnapBackgroundAll(this)">Snap Background</button>
+                    <input id="acceptableImageToImageDifference" type="range" min="0" max="100" value="22" class="slider" oninput="doAcceptableImageToImageDifferenceValue(this)"/>
+                    Img to Img Diff Threshold:<span id="acceptableImageToImageDifferenceValue">0</span>
+                </div>
+                <div style="display:none" id="snapAllPhotosArea" class="panel-body">
+                    <!--
+                    <div class="row">
+                        Actual Size
+                        <canvas id="photoCanvas2"></canvas>
+                    </div>
+                -->
+                    <div class="row">
+                        <!--For Display Only-->
+                        <canvas id="photoDispCanvas2" width="600" height="300"></canvas>
+                    </div>
+                    <div class="row">
+                        <span id="generatedCategoryButtonsForSnapShot"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-fluid">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>BACKGROUNDS</strong>
+                    <button class="btn btn-default" id="showHideBackgrounds" onclick="doShowHideBackgrounds(this)">Show</button>
+                    <button class="btn btn-default" id="showPrevImageFromBackgrounds" onclick="doShowNextPrevImageFromBackgrounds(this)">Prev</button>
+                    <button class="btn btn-default" id="showNextImageFromBackgrounds" onclick="doShowNextPrevImageFromBackgrounds(this)">Next</button>
+                    <button class="btn btn-default" id="sendFromBackgroundsToMixed" onclick="doSendFromBackgroundsToMixed(this)">Mix</button>
+                    <font size="+2"><span id="numberOfBackgrounds">0</span></font>
+                </div>
+                <div style="display:none" id="backgroundsArea" class="panel-body">
+                    <canvas id="backgroundsDispCanvas2" width="600" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-fluid">
+            <div id="galleryPanel" class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>GALLERIES</strong>
+                    <button class="btn btn-default" id="showHideGallery" onclick="doShowHideGallery(this)">Show</button>
+                    <button class="btn btn-default" id="showPrevImageFromGallery" onclick="doShowNextPrevImageFromGallery(this)">Prev</button>
+                    <button class="btn btn-default" id="showNextImageFromGallery" onclick="doShowNextPrevImageFromGallery(this)">Next</button>
+                    <button class="btn btn-default" id="sendFromGalleryToMixed" onclick="doSendFromGalleryToMixed(this)">Mix</button>
+                    Categories:<span id="generatedCategoryButtonsForGalleryImage"></span>
+                    <font size="+2"><strong><span id="numberOfImages">0</span></strong></font>
+                </div>
+                <div style="display:none" id="galleryArea" class="panel-body">
+                    <div>
+                        <div id="categories2"></div>
+                        <canvas id="galleryDispCanvas2" width="600" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-fluid">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>MIXED</strong><p>
+                    Diff Threshold (Normal Diff mode):&nbsp;<span id="normalDiffThresholdValue">0</span>
+                    <input id="normalDiffThreshold" type="range" min="0" max="255" value="200" class="slider" oninput="doNormalDiffThresholdValue(this)" />
+                    <button class="btn btn-default" id="showHideBackgroundsPlusGalleries" onclick="doShowHideBackgroundsPlusGalleries(this)">Show</button>
+                    <button class="btn btn-default" id="showHideSelfNormalDifference" onclick="doShowHideMixedImagesSelfNormalDifferences(this)">Normal</button>
+                    <button class="btn btn-default" id="showHideSelfColorDifference" onclick="doShowHideMixedImagesSelfColorDifferences(this)">Color</button>
+                    <button class="btn btn-default" id="showHideSelfMonoDifference" onclick="doShowHideMixedImagesSelfMonoDifferences(this)">Monochrome</button>
+                    <button class="btn btn-default" id="showHideSelfSolidDifference" onclick="doShowHideMixedImagesSelfSolidDifferences(this)">Solid</button>
+                    Mode Active Now:&nbsp;<strong><span id="colorMode">Normal Diff</span></strong>
+                    <p>
+                    Contrast (Color or Monochrome mode):&nbsp;<span id="contrastValue">0</span><input id="contrast" type="range" min="0" max="155" value="60" class="slider" oninput="doContrastValue(this)" />
+                    Diff Threshold (Solid mode only):&nbsp;<span id="diffThresholdValue">0</span><input id="diffThreshold" type="range" min="0" max="255" value="197" class="slider" oninput="doDiffThresholdValue(this)"/>
+                    Grid Squares:<span id="gridSquaresValue">0</span><input id="gridSquares" type="range" min="8" max="30" value="12" class="slider" oninput="doGridSquaresValue(this)"/>
+                    BgDiff:<span id="bgDiffValue">0</span><input id="bgDiff" type="range" min="0" max="500" value="14" class="slider" oninput="doBgDiffValue(this)"/>
+                </div>
+                <div style="display:none; background-color:#F0F4F9" id="backgroundsPlusGalleriesArea" class="panel-body">
+                    <div class="col col-xs-6">
+                    <canvas id="backgroundsPlusGalleriesDispCanvas2" width="600" height="300"></canvas>
+                    </div>
+                    <div class="col col-xs-6">
+                    <canvas id="gridDispCanvas2" width="600" height="300"></canvas>
+                    </div>
+                    <div id="dynamicSingleImageCanvasesContainer"></div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+    <script src="./libraries/filesaver.js"></script>
+    <script src="messages.js"></script>
+    <script src="index.js"></script>
+    <script src="photos.and.galleries.funcs.js"></script>
+    <script src="generated.label.buttons.js"></script>
+    <script src="index.html.event.handlers.js"></script>
+    <script src="grid.squares.images.js"></script>
+</html>
